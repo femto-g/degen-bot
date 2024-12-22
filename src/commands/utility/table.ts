@@ -1,12 +1,12 @@
 import { SlashCommandBuilder, CommandInteraction } from "discord.js";
-import { exampleStockTable } from "../../core/messages";
+import { table1D, exampleStockTable } from "../../core/messages";
 
 export const data = new SlashCommandBuilder()
-  .setName("nothing")
-  .setDescription("Example Embed");
+  .setName("tabletest")
+  .setDescription("Table");
 
 export async function execute(interaction: CommandInteraction) {
   //   await interaction.reply({ embeds: [exampleStockTable()] });
   //   await interaction.reply({ embeds: [exampleStockTable()] });
-  await interaction.reply("Deprecated command");
+  await interaction.reply(exampleStockTable());
 }
