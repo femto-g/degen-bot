@@ -6,6 +6,7 @@ export interface EnvironmentVariables {
   token: string;
   clientId: string;
   guildId: string;
+  apiKey: string;
 }
 // const envPath: string = path.resolve(____dirname, `.env.${process.env.NODE_ENV}`);
 
@@ -27,6 +28,7 @@ export const environmentVariables: EnvironmentVariables = {
   token: process.env.token!,
   clientId: process.env.clientId!,
   guildId: process.env.guildId!,
+  apiKey: process.env.apiKey!,
 };
 
 export default environmentVariables;
