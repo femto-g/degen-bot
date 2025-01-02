@@ -41,57 +41,95 @@ function normalizeTicker(ticker: string) {
   return ticker;
 }
 
-function normalizePrice(price: number) {
-  //first normalize price max width 6
-  // 3.05
-  // 3.23k
-  // 345.12 354.2k
-  // 3.453K 34500.23 34.53k
+// function normalizePrice(price: number) {
+//   //first normalize price max width 6
+//   // 3.05
+//   // 3.23k
+//   // 345.12 354.2k
+//   // 3.453K 34500.23 34.53k
 
-  const stringPrice = price.toString();
-  const [dollars, cents] = stringPrice.split(".");
-  let normalizedPrice;
-  switch (dollars.length) {
-    case 4:
-      normalizedPrice = dollars[0] + "." + dollars.substring(1, 4) + "K";
-      break;
-    case 5:
-      normalizedPrice =
-        dollars.substring(0, 2) + "." + dollars.substring(2, 4) + "K";
-      break;
-    case 6:
-      normalizedPrice =
-        dollars.substring(0, 3) + "." + dollars.substring(3, 4) + "K";
-      break;
-    default:
-      normalizedPrice = dollars + "." + cents;
-      break;
+//   const stringPrice = price.toString();
+//   const [dollars, cents] = stringPrice.split(".");
+//   let normalizedPrice;
+//   switch (dollars.length) {
+//     case 4:
+//       normalizedPrice = dollars[0] + "." + dollars.substring(1, 4) + "K";
+//       break;
+//     case 5:
+//       normalizedPrice =
+//         dollars.substring(0, 2) + "." + dollars.substring(2, 4) + "K";
+//       break;
+//     case 6:
+//       normalizedPrice =
+//         dollars.substring(0, 3) + "." + dollars.substring(3, 4) + "K";
+//       break;
+//     default:
+//       normalizedPrice = dollars + "." + cents;
+//       break;
+//   }
+//   return normalizedPrice;
+// }
+
+function normalizePrice(price: number): string {
+  let normalizedPrice: string;
+
+  if (price >= 1000000) {
+    // If price is 1 million or more, convert to millions (e.g., 1.23M)
+    const roundedPrice = Math.round((price / 1000000) * 100) / 100; // Round to two decimal places
+    normalizedPrice = roundedPrice.toFixed(2) + "M";
+  } else if (price >= 1000) {
+    // If price is 1 thousand or more, convert to thousands (e.g., 32.32K)
+    const roundedPrice = Math.round((price / 1000) * 100) / 100; // Round to two decimal places
+    normalizedPrice = roundedPrice.toFixed(2) + "K";
+  } else {
+    // Otherwise, return the price as is
+    normalizedPrice = price.toFixed(2);
   }
+
   return normalizedPrice;
 }
 
-function normalizePercentChange(change: number) {
-  //max width 5
+// function normalizePercentChange(change: number) {
+//   //max width 5
 
-  let isNeg = false;
-  if (change < 0) {
-    isNeg = true;
-    change *= -1;
+//   let isNeg = false;
+//   if (change < 0) {
+//     isNeg = true;
+//     change *= -1;
+//   }
+
+//   const stringPercentChange = change.toString();
+//   let normalizedPercent;
+//   if (stringPercentChange.length < 4) {
+//     normalizedPercent = stringPercentChange;
+//   } else {
+//     normalizedPercent = stringPercentChange.slice(0, 4);
+//   }
+//   if (isNeg) {
+//     normalizedPercent = "⬇" + normalizedPercent;
+//   } else {
+//     normalizedPercent = "⬆" + normalizedPercent;
+//   }
+//   return normalizedPercent + "%";
+// }
+
+function normalizePercentChange(ratio: number): string {
+  // Determine if the ratio is positive or negative
+  const arrow = ratio > 0 ? "⬆" : ratio < 0 ? "⬇" : "";
+
+  // Convert the ratio to a percentage and round to two decimal places
+  const percentage = Math.abs(ratio).toFixed(2);
+
+  // Format the result ensuring
+  let result = arrow + percentage + "%";
+
+  // If the resulting string exceeds 6 characters, truncate it
+  if (result.length > 6) {
+    // Only keep the portion that fits, leaving room for the percent symbol
+    result = result.slice(0, 5) + "%";
   }
 
-  const stringPercentChange = change.toString();
-  let normalizedPercent;
-  if (stringPercentChange.length < 4) {
-    normalizedPercent = stringPercentChange;
-  } else {
-    normalizedPercent = stringPercentChange.slice(0, 4);
-  }
-  if (isNeg) {
-    normalizedPercent = "⬇" + normalizedPercent;
-  } else {
-    normalizedPercent = "⬆" + normalizedPercent;
-  }
-  return normalizedPercent + "%";
+  return result;
 }
 
 export function normalizeSnapshot(snapshot: StockSnapshot) {
@@ -156,7 +194,7 @@ export async function getCryptoAggregates(ticker: string) {
 }
 
 export function getSnapShot(aggregates: Aggregates) {
-  console.log(aggregates);
+  //console.log(aggregates);
   const { ticker, results, resultsCount } = aggregates;
 
   const newestResult = results[resultsCount - 1];

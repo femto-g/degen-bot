@@ -1,13 +1,13 @@
-export function exampleStockTable() {
-  const table = table1D(
-    ["Ticker    ", "Price", "24H", "1WK", "1MO"],
-    [
-      ["Plac", "Plac", "Placeholder", "Pla", "Pla"],
-      ["Plac", "Plac", "Pla", "Pla", "Placeholder"],
-    ]
-  );
-  return table;
-}
+// export function exampleStockTable() {
+//   const table = table1D(
+//     ["Ticker    ", "Price", "24H", "1WK", "1MO"],
+//     [
+//       ["Plac", "Plac", "Placeholder", "Pla", "Pla"],
+//       ["Plac", "Plac", "Pla", "Pla", "Placeholder"],
+//     ]
+//   );
+//   return table;
+// }
 
 export function snapshotTable(snapshot: any) {
   const arr = [];

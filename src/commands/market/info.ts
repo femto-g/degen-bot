@@ -32,15 +32,28 @@ export async function execute(interaction: CommandInteraction) {
     interaction.options.get("ticker")?.value as string
   ).toUpperCase();
   const assetClass = interaction.options.get("class")?.value as string;
-  let snapshot;
+  let snapshot = null;
   if (assetClass == "Stock") {
-    const aggs = await getStockAggregates(ticker);
+    let aggs = null;
+    try {
+      aggs = await getStockAggregates(ticker);
+    } catch (error) {
+      return interaction.reply({
+        content: "Invalid ticker. Use a valid stock ticker symbol.",
+      });
+    }
     snapshot = getSnapShot(aggs);
   } else {
-    const aggs = await getCryptoAggregates(ticker);
-    snapshot = getSnapShot(aggs);
+    let aggs = null;
+    try {
+      aggs = await getCryptoAggregates(ticker);
+    } catch (error) {
+      return interaction.reply({
+        content: "Invalid ticker. Use a valid crypto ticker symbol",
+      });
+    }
   }
   //   console.log(snapshot);
-  const table = snapshotTable(normalizeSnapshot(snapshot));
+  const table = snapshotTable(normalizeSnapshot(snapshot!));
   await interaction.reply(table);
 }
