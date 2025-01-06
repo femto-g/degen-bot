@@ -6,7 +6,16 @@ import {
   normalizeSnapshot,
 } from "../../biz/stocks";
 import { snapshotTable } from "../../core/messages";
+import Bottleneck from "bottleneck";
+import { RequestError } from "../../core/errors";
 
+// const limiter = new Bottleneck({
+//   reservoir: 5,
+//   reservoirRefreshAmount: 5,
+//   reservoirRefreshInterval: 60 * 1000,
+//   maxConcurrent: 2,
+//   minTime: 5 * 1000,
+// });
 export const data = new SlashCommandBuilder()
   .setName("info")
   .setDescription("Replies with snapshot")
@@ -28,6 +37,10 @@ export const data = new SlashCommandBuilder()
   );
 
 export async function execute(interaction: CommandInteraction) {
+  //await interaction.deferReply({ ephemeral: true });
+  //   await interaction.editReply(
+  //     "This command is rate limited; try not to use it too often in a short time."
+  //   );
   const ticker = (
     interaction.options.get("ticker")?.value as string
   ).toUpperCase();
@@ -35,25 +48,40 @@ export async function execute(interaction: CommandInteraction) {
   let snapshot = null;
   if (assetClass == "Stock") {
     let aggs = null;
+    //need to discriminate between errors later
     try {
+      //   aggs = await limiter.schedule(
+      //     async () => await getStockAggregates(ticker)
+      //   );
       aggs = await getStockAggregates(ticker);
     } catch (error) {
-      return interaction.reply({
-        content: "Invalid ticker. Use a valid stock ticker symbol.",
-      });
+      if (error instanceof RequestError) {
+        return await interaction.reply({
+          content: error.message,
+          ephemeral: true,
+        });
+      }
     }
-    snapshot = getSnapShot(aggs);
+    snapshot = getSnapShot(aggs!);
   } else {
     let aggs = null;
     try {
+      //   aggs = await limiter.schedule(
+      //     async () => await getStockAggregates(ticker)
+      //   );
       aggs = await getCryptoAggregates(ticker);
     } catch (error) {
-      return interaction.reply({
-        content: "Invalid ticker. Use a valid crypto ticker symbol",
-      });
+      if (error instanceof RequestError) {
+        return await interaction.reply({
+          content: error.message,
+          ephemeral: true,
+        });
+      }
     }
+    snapshot = getSnapShot(aggs!);
   }
   //   console.log(snapshot);
   const table = snapshotTable(normalizeSnapshot(snapshot!));
+  //   await interaction.deleteReply();
   await interaction.reply(table);
 }

@@ -1,5 +1,7 @@
 import { DateTime } from "luxon";
 import environmentVariables, { EnvironmentVariables } from "../core/env";
+import { StatusCodes } from "http-status-codes";
+import { InvalidTickerError, RateLimitExceededError } from "../core/errors";
 
 interface StockSnapshot {
   ticker: string;
@@ -164,9 +166,12 @@ export async function getStockAggregates(ticker: string) {
 
   const url = `https://api.polygon.io/v2/aggs/ticker/${ticker}/range/1/day/${rangeStart}/${rangeEnd}?adjusted=true&sort=asc&apiKey=${apiKey}`;
   const response = await fetch(url);
+  if (response.status == StatusCodes.TOO_MANY_REQUESTS) {
+    throw new RateLimitExceededError();
+  }
   const aggregates: Aggregates = await response.json();
   if (aggregates.resultsCount == 0) {
-    throw new Error("Invalid ticker");
+    throw new InvalidTickerError();
   }
 
   return aggregates;
@@ -185,9 +190,12 @@ export async function getCryptoAggregates(ticker: string) {
 
   const url = `https://api.polygon.io/v2/aggs/ticker/${ticker}/range/1/day/${rangeStart}/${rangeEnd}?adjusted=true&sort=asc&apiKey=${apiKey}`;
   const response = await fetch(url);
+  if (response.status == StatusCodes.TOO_MANY_REQUESTS) {
+    throw new RateLimitExceededError();
+  }
   const aggregates: Aggregates = await response.json();
   if (aggregates.resultsCount == 0) {
-    throw new Error("Invalid ticker");
+    throw new InvalidTickerError();
   }
 
   return aggregates;
