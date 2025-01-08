@@ -201,6 +201,16 @@ export async function getCryptoAggregates(ticker: string) {
   return aggregates;
 }
 
+export async function getAggregates(ticker: string, assetClass: string) {
+  if (assetClass == "Stock") {
+    return await getStockAggregates(ticker);
+  } else if (assetClass == "Crypto") {
+    return await getCryptoAggregates(ticker);
+  } else {
+    throw new Error("Unknown asset class");
+  }
+}
+
 export function getSnapShot(aggregates: Aggregates) {
   //console.log(aggregates);
   const { ticker, results, resultsCount } = aggregates;
