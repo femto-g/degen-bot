@@ -1,13 +1,18 @@
-import { CommandInteraction, SlashCommandBuilder } from "discord.js";
+import {
+  AttachmentBuilder,
+  CommandInteraction,
+  SlashCommandBuilder,
+} from "discord.js";
 import {
   getCryptoAggregates,
   getSnapShot,
   getStockAggregates,
   normalizeSnapshot,
 } from "../../biz/stocks";
-import { snapshotTable } from "../../core/messages";
+import { snapshotTable } from "../../core/messages/text";
 import Bottleneck from "bottleneck";
 import { RequestError } from "../../core/errors";
+import { createOHLTChart, getChartUrl } from "../../core/messages/chart";
 
 // const limiter = new Bottleneck({
 //   reservoir: 5,
@@ -46,8 +51,9 @@ export async function execute(interaction: CommandInteraction) {
   ).toUpperCase();
   const assetClass = interaction.options.get("class")?.value as string;
   let snapshot = null;
+  let aggs = null;
   if (assetClass == "Stock") {
-    let aggs = null;
+    // let aggs = null;
     //need to discriminate between errors later
     try {
       //   aggs = await limiter.schedule(
@@ -64,7 +70,7 @@ export async function execute(interaction: CommandInteraction) {
     }
     snapshot = getSnapShot(aggs!);
   } else {
-    let aggs = null;
+    // let aggs = null;
     try {
       //   aggs = await limiter.schedule(
       //     async () => await getStockAggregates(ticker)
@@ -83,5 +89,9 @@ export async function execute(interaction: CommandInteraction) {
   //   console.log(snapshot);
   const table = snapshotTable(normalizeSnapshot(snapshot!));
   //   await interaction.deleteReply();
-  await interaction.reply(table);
+  //await interaction.reply(table);
+  const chart = new AttachmentBuilder(
+    await getChartUrl(createOHLTChart(aggs!))
+  ).setName("img.png");
+  await interaction.reply({ content: table, files: [chart] });
 }

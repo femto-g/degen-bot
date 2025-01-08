@@ -11,6 +11,7 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
+    "@types/chart.js": "^2.9.41",
     "@types/luxon": "^3.4.2",
     "cross-env": "^7.0.3",
     "jest": "^29.7.0",
@@ -20,9 +21,11 @@
   },
   "dependencies": {
     "bottleneck": "^2.19.5",
+    "chart.js": "^4.4.7",
     "discord.js": "^14.16.3",
     "dotenv": "^16.4.7",
     "http-status-codes": "^2.3.0",
-    "luxon": "^3.5.0"
+    "luxon": "^3.5.0",
+    "quickchart-js": "^3.1.3"
   }
 }

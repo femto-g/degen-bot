@@ -11,7 +11,7 @@ interface StockSnapshot {
   monthPercentChange: number;
 }
 
-interface Aggregates {
+export interface Aggregates {
   ticker: string; // The exchange symbol that this item is traded under (e.g., "X:BTCUSD")
   adjusted: boolean; // Whether the data is adjusted for stock splits or not
   queryCount: number; // The number of aggregates (minute or day) used to generate the response
