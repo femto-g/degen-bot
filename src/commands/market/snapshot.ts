@@ -5,26 +5,15 @@ import {
 } from "discord.js";
 import {
   getAggregates,
-  getCryptoAggregates,
   getSnapShot,
-  getStockAggregates,
   normalizeSnapshot,
 } from "../../biz/stocks";
 import { snapshotTable } from "../../core/messages/text";
-import Bottleneck from "bottleneck";
 import { RequestError } from "../../core/errors";
-import { createOHLTChart, getChartUrl } from "../../core/messages/chart";
 
-// const limiter = new Bottleneck({
-//   reservoir: 5,
-//   reservoirRefreshAmount: 5,
-//   reservoirRefreshInterval: 60 * 1000,
-//   maxConcurrent: 2,
-//   minTime: 5 * 1000,
-// });
 export const data = new SlashCommandBuilder()
-  .setName("info")
-  .setDescription("Replies with info on a security")
+  .setName("snapshot")
+  .setDescription("Replies with snapshot of a security")
   .addStringOption((option) =>
     option
       .setName("ticker")
@@ -75,19 +64,16 @@ export async function execute(interaction: CommandInteraction) {
   const table = snapshotTable(normalizeSnapshot(snapshot));
   //   await interaction.deleteReply();
   //await interaction.reply(table);
-  const chart = new AttachmentBuilder(
-    await getChartUrl(createOHLTChart(aggs))
-  ).setName("img.png");
   if (interaction.replied) {
-    await interaction.editReply({ content: table, files: [chart] });
+    await interaction.editReply({ content: table });
   } else {
     try {
       clearTimeout(timeout);
-      await interaction.reply({ content: table, files: [chart] });
+      await interaction.reply({ content: table });
     } catch (error) {
       //handle race condition
       //TODO: check for instance to whatever discordjs error this is
-      await interaction.editReply({ content: table, files: [chart] });
+      await interaction.editReply({ content: table });
     }
   }
 }

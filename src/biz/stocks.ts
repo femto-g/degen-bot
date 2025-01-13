@@ -2,6 +2,7 @@ import { DateTime } from "luxon";
 import environmentVariables, { EnvironmentVariables } from "../core/env";
 import { StatusCodes } from "http-status-codes";
 import { InvalidTickerError, RateLimitExceededError } from "../core/errors";
+import { getRedisClient } from "../core/redis";
 
 interface StockSnapshot {
   ticker: string;
@@ -202,10 +203,22 @@ export async function getCryptoAggregates(ticker: string) {
 }
 
 export async function getAggregates(ticker: string, assetClass: string) {
+  const client = await getRedisClient();
+
+  if (await client.exists(ticker)) {
+    console.log(`${ticker} fetched from cache`);
+    const aggs = await client.get(ticker);
+    return JSON.parse(aggs!);
+  }
+
   if (assetClass == "Stock") {
-    return await getStockAggregates(ticker);
+    const aggs = await getStockAggregates(ticker);
+    client.set(ticker, JSON.stringify(aggs));
+    return aggs;
   } else if (assetClass == "Crypto") {
-    return await getCryptoAggregates(ticker);
+    const aggs = await getCryptoAggregates(ticker);
+    client.set(ticker, JSON.stringify(aggs));
+    return aggs;
   } else {
     throw new Error("Unknown asset class");
   }

@@ -33,6 +33,7 @@ const { clientId, guildId, token } = environmentVariables;
 
   // Construct and prepare an instance of the REST module
   const rest = new REST().setToken(token);
+  //console.log(commands);
 
   // and deploy your commands!
   // (async () => {

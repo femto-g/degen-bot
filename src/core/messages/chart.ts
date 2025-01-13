@@ -20,9 +20,9 @@ myChart
 export async function getChartUrl(config: ChartConfiguration) {
   const chart = new QuickChart();
   chart.setConfig(config).setVersion("3");
-  const url = chart.getUrl();
-  const shorturl = await chart.getShortUrl();
-  console.log(shorturl);
+  const url = await chart.getUrl();
+  //const shorturl = await chart.getShortUrl();
+  //console.log(shorturl);
   return url;
 }
 
