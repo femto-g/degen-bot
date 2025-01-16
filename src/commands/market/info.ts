@@ -37,8 +37,8 @@ export const data = new SlashCommandBuilder()
       .setDescription("Asset class of the ticker")
       .setRequired(true)
       .addChoices(
-        { name: "Stock", value: "Stock" },
-        { name: "Crypto", value: "Crypto" }
+        { name: "Stock", value: "STOCK" },
+        { name: "Crypto", value: "CRYPTO" }
       )
   );
 

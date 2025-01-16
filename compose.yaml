@@ -14,22 +14,68 @@ services:
       dockerfile: ./Dockerfile
     ports:
       - 3000:3000
-    # depends_on:
-    #   - backend
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file:
+      - .env.
+      # cache:
+      #   condition: service_healthy
     # env_file:
     #   - ./backend/compose.env
     develop:
       watch:
         - action: sync
           path: .
-          target: /root
+          target: /home/app/
           ignore:
             - ./node_modules
+            # - ./prisma
         - action: rebuild
           path: ./package.json
-          target: /root/package.json
+          target: /home/app/package.json
+    # volumes:
+    #   - type: bind
+    #     source: ./prisma
+    #     target: /home/app/prisma
+    # # stdin_open: true
+    # tty: true
+
   cache:
     image: redis:alpine
     restart: always
     ports:
       - 6379:6379
+    volumes:
+      - redis_data:/data
+  db:
+    image: postgres
+    restart: always
+    user: postgres
+    secrets:
+      - db-password
+    # volumes:
+    #   - db-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_PASSWORD_FILE=/run/secrets/db-password
+    expose:
+      - 5432
+    healthcheck:
+      test: ["CMD", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+secrets:
+  db-password:
+    file: secrets/db-password.txt
+
+volumes:
+  postgres_data:
+    # driver: local
+  redis_data:

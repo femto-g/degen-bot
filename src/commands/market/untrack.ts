@@ -9,11 +9,13 @@ import {
   normalizeSnapshot,
 } from "../../biz/stocks";
 import { snapshotTable } from "../../core/messages/text";
-import { RequestError } from "../../core/errors";
+import { InvalidTickerError, RequestError } from "../../core/errors";
+import { addTrackedAsset, removeTrackedAsset } from "../../data/trackedAssets";
+import { AssetClass, Prisma } from "@prisma/client";
 
 export const data = new SlashCommandBuilder()
-  .setName("snapshot")
-  .setDescription("Replies with snapshot of a security")
+  .setName("untrack")
+  .setDescription("Remove an asset from a tracking list")
   .addStringOption((option) =>
     option
       .setName("ticker")
@@ -41,39 +43,36 @@ export async function execute(interaction: CommandInteraction) {
   const ticker = (
     interaction.options.get("ticker")?.value as string
   ).toUpperCase();
-  const assetClass = interaction.options.get("class")?.value as string;
-  let snapshot = null;
+  const assetClass = interaction.options.get("class")?.value as AssetClass;
 
-  let aggs = null;
+  const successReply = `${ticker} removed from tracking list`;
   try {
-    aggs = await getAggregates(ticker, assetClass);
+    await removeTrackedAsset(ticker, assetClass);
   } catch (error) {
-    if (error instanceof RequestError) {
-      //race condition possible here too but I don't think it will actually occur
-      clearTimeout(timeout);
-      return await interaction.reply({
-        content: error.message,
-        ephemeral: true,
-      });
-    } else {
-      throw error;
-    }
+    //catch some db error maybe?
+    // catch if doesn't exist?
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      console.log(`caught error ${error.code}`);
+      if (error.code === "P2025") {
+        return await interaction.reply({
+          content:
+            "This asset is not currently being tracked or the asset class is incorrect.",
+          ephemeral: true,
+        });
+      }
+    } else throw error;
   }
-  snapshot = getSnapShot(aggs);
 
-  const table = snapshotTable(normalizeSnapshot(snapshot));
-  //   await interaction.deleteReply();
-  //await interaction.reply(table);
   if (interaction.replied) {
-    await interaction.editReply({ content: table });
+    await interaction.editReply({ content: successReply });
   } else {
     try {
       clearTimeout(timeout);
-      await interaction.reply({ content: table });
+      await interaction.reply({ content: successReply });
     } catch (error) {
       //handle race condition
       //TODO: check for instance to whatever discordjs error this is
-      await interaction.editReply({ content: table });
+      await interaction.editReply({ content: successReply });
     }
   }
 }

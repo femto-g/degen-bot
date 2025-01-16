@@ -7,6 +7,7 @@ export interface EnvironmentVariables {
   clientId: string;
   guildId: string;
   apiKey: string;
+  databaseUrl: string;
 }
 // const envPath: string = path.resolve(____dirname, `.env.${process.env.NODE_ENV}`);
 
@@ -29,6 +30,7 @@ export const environmentVariables: EnvironmentVariables = {
   clientId: process.env.clientId!,
   guildId: process.env.guildId!,
   apiKey: process.env.apiKey!,
+  databaseUrl: process.env.DATABASE_URL!,
 };
 
 export default environmentVariables;

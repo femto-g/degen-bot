@@ -9,6 +9,7 @@
 //   return table;
 // }
 
+//DEPRECATED use infoTable()
 export function snapshotTable(snapshot: any) {
   const arr = [];
   for (let key in snapshot) {
@@ -16,6 +17,20 @@ export function snapshotTable(snapshot: any) {
   }
 
   const table = table1D(["Ticker", "Price", "24H", "1WK", "1MO"], [arr]);
+  return table;
+}
+
+export function infoTable(snapshots: any[]) {
+  const arr = [];
+  for (let snapshot of snapshots) {
+    let row = [];
+    for (let key in snapshot) {
+      row.push(snapshot[key]);
+    }
+    arr.push(row);
+  }
+
+  const table = table1D(["Ticker", "Price", "24H", "1WK", "1MO"], arr);
   return table;
 }
 

@@ -35,6 +35,8 @@ interface AggregateBar {
   vw: number; // Volume-weighted average price for the symbol in the given time period
 }
 
+export type AssetClass = "STOCK" | "CRYPTO";
+
 const { apiKey } = environmentVariables;
 
 function normalizeTicker(ticker: string) {
@@ -206,20 +208,22 @@ export async function getAggregates(ticker: string, assetClass: string) {
   const client = await getRedisClient();
 
   if (await client.exists(ticker)) {
-    console.log(`${ticker} fetched from cache`);
-    const aggs = await client.get(ticker);
-    return JSON.parse(aggs!);
+    //console.log(`${ticker} fetched from cache`);
+    const cachedAggs = await client.get(ticker);
+    const aggs = JSON.parse(cachedAggs!) as Aggregates; //add Zod Validation here?
+    return aggs;
   }
 
-  if (assetClass == "Stock") {
+  if (assetClass == "STOCK") {
     const aggs = await getStockAggregates(ticker);
-    client.set(ticker, JSON.stringify(aggs));
+    await cacheAggregates(ticker, aggs);
     return aggs;
-  } else if (assetClass == "Crypto") {
+  } else if (assetClass == "CRYPTO") {
     const aggs = await getCryptoAggregates(ticker);
-    client.set(ticker, JSON.stringify(aggs));
+    await cacheAggregates(ticker, aggs);
     return aggs;
   } else {
+    console.log(assetClass);
     throw new Error("Unknown asset class");
   }
 }
@@ -247,4 +251,11 @@ export function getSnapShot(aggregates: Aggregates) {
   };
 
   return snapshot;
+}
+
+export async function cacheAggregates(ticker: string, aggs: Aggregates) {
+  const client = await getRedisClient();
+  const endofDay = DateTime.now().endOf("day").toMillis();
+  await client.set(ticker, JSON.stringify(aggs));
+  await client.expireAt(ticker, endofDay);
 }
