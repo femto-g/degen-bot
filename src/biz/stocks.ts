@@ -3,6 +3,8 @@ import environmentVariables, { EnvironmentVariables } from "../core/env";
 import { StatusCodes } from "http-status-codes";
 import { InvalidTickerError, RateLimitExceededError } from "../core/errors";
 import { getRedisClient } from "../core/redis";
+import { getTrackedAssets } from "../data/trackedAssets";
+import Bottleneck from "bottleneck";
 
 interface StockSnapshot {
   ticker: string;
@@ -259,4 +261,19 @@ export async function cacheAggregates(ticker: string, aggs: Aggregates) {
   const endofDay = DateTime.now().endOf("day").toMillis();
   await client.set(ticker, JSON.stringify(aggs));
   await client.expireAt(ticker, endofDay);
+}
+
+export async function refreshList() {
+  const list = await getTrackedAssets();
+  const limiter = new Bottleneck({
+    // reservoir: 5,
+    // reservoirRefreshAmount: 5,
+    // reservoirRefreshInterval: 60 * 1000,
+    maxConcurrent: 1,
+    minTime: 12 * 1000,
+  });
+  for (let asset of list) {
+    let { ticker, assetClass } = asset;
+    await limiter.schedule(async () => getAggregates(ticker, assetClass));
+  }
 }

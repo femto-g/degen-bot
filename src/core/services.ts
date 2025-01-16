@@ -3,6 +3,8 @@ import path from "path";
 import { Collection, Client, MessageFlags, Events } from "discord.js";
 import environmentVariables from "./env";
 import { logger } from "./logger";
+import * as cron from "node-cron";
+import { refreshList } from "../biz/stocks";
 
 const { token } = environmentVariables;
 
@@ -86,4 +88,21 @@ export async function buildClient(client: Client) {
   await loadCommands(client);
   addHandlers(client);
   client.login(token);
+
+  cron.schedule(
+    "0 0 * * *",
+    async () => {
+      console.log("Refreshing tracking list");
+      try {
+        await refreshList();
+        console.log("Finished refreshing");
+      } catch (error) {
+        logger.error(error);
+      }
+    },
+    {
+      scheduled: true,
+      timezone: "America/New_York",
+    }
+  );
 }

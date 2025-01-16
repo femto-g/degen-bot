@@ -50,6 +50,7 @@ export async function execute(interaction: CommandInteraction) {
     table = infoTable(normalizedSnapshots);
   } catch (error) {
     //for now do this but the data should be pre-cached by the cron so this should never/rarely occur
+    //TODO
     if (error instanceof RateLimitExceededError) {
       return await interaction.reply({
         content: error.message,
