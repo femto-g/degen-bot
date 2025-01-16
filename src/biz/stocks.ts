@@ -208,6 +208,7 @@ export async function getAggregates(ticker: string, assetClass: string) {
   const client = await getRedisClient();
 
   if (await client.exists(ticker)) {
+    //TODO: This is only using the ticker as a key, should be {ticker, assetClass}
     //console.log(`${ticker} fetched from cache`);
     const cachedAggs = await client.get(ticker);
     const aggs = JSON.parse(cachedAggs!) as Aggregates; //add Zod Validation here?

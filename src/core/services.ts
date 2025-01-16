@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import { Collection, Client, MessageFlags, Events } from "discord.js";
 import environmentVariables from "./env";
+import { logger } from "./logger";
 
 const { token } = environmentVariables;
 
@@ -55,8 +56,17 @@ function addHandlers(client: Client) {
 
     try {
       await command.execute(interaction);
+      logger.info({
+        commandName: interaction.commandName,
+        options: interaction.options.data.map((option) => ({
+          name: option.name,
+          value: option.value,
+        })),
+        replied: interaction.replied,
+      });
     } catch (error) {
-      console.error(error);
+      //console.error(error);
+      logger.error(error);
       if (interaction.replied || interaction.deferred) {
         await interaction.followUp({
           content: "There was an error while executing this command!",
