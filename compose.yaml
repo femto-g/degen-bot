@@ -48,6 +48,13 @@ services:
       - 6379:6379
     volumes:
       - redis_data:/data
+    secrets:
+      - redis-password
+    environment:
+      - REDIS_PASSWORD_FILE=/run/secrets/redis-password
+    command: sh -c "redis-server --requirepass \"$(cat $${REDIS_PASSWORD_FILE})\""
+    # env_file:
+    #   - .env.
   db:
     image: postgres
     restart: always
@@ -74,6 +81,8 @@ services:
 secrets:
   db-password:
     file: secrets/db-password.txt
+  redis-password:
+    file: secrets/redis-password.txt
 
 volumes:
   postgres_data:

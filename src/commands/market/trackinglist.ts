@@ -1,6 +1,8 @@
 import {
   AttachmentBuilder,
   CommandInteraction,
+  DiscordjsError,
+  DiscordjsErrorCodes,
   SlashCommandBuilder,
 } from "discord.js";
 import {
@@ -69,8 +71,13 @@ export async function execute(interaction: CommandInteraction) {
       await interaction.reply({ content: table });
     } catch (error) {
       //handle race condition
-      //TODO: check for instance to whatever discordjs error this is
-      await interaction.editReply({ content: table });
+      //DONE: check for instance to whatever discordjs error this is
+      if (
+        error instanceof DiscordjsError &&
+        error.code == DiscordjsErrorCodes.InteractionAlreadyReplied
+      ) {
+        await interaction.editReply({ content: table });
+      } else throw error;
     }
   }
 }

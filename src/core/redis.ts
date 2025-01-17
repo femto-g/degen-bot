@@ -1,11 +1,14 @@
 import { createClient } from "redis";
+import { environmentVariables } from "./env";
 
 const client = (async () => {
   return await createClient({
     //TODO: password protect and put in .env
-    url: "redis://cache:6379",
+    url: environmentVariables.redisUrl,
   })
-    .on("error", (err) => console.log("Redis Client Error", err))
+    .on("error", (err) => {
+      console.log("Redis Client Error", err);
+    })
     .connect();
 })();
 

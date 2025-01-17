@@ -1,5 +1,5 @@
 import { DateTime } from "luxon";
-import environmentVariables, { EnvironmentVariables } from "../core/env";
+import { environmentVariables, EnvironmentVariables } from "../core/env";
 import { StatusCodes } from "http-status-codes";
 import { InvalidTickerError, RateLimitExceededError } from "../core/errors";
 import { getRedisClient } from "../core/redis";
@@ -265,6 +265,7 @@ export async function cacheAggregates(ticker: string, aggs: Aggregates) {
 
 export async function refreshList() {
   const list = await getTrackedAssets();
+  //TODO: idk maybe make this better? but I don't think I have to
   const limiter = new Bottleneck({
     // reservoir: 5,
     // reservoirRefreshAmount: 5,

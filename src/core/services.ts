@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 import { Collection, Client, MessageFlags, Events } from "discord.js";
-import environmentVariables from "./env";
+import { environmentVariables } from "./env";
 import { logger } from "./logger";
 import * as cron from "node-cron";
 import { refreshList } from "../biz/stocks";
