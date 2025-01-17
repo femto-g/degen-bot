@@ -258,7 +258,10 @@ export function getSnapShot(aggregates: Aggregates) {
 
 export async function cacheAggregates(ticker: string, aggs: Aggregates) {
   const client = await getRedisClient();
-  const endofDay = DateTime.now().endOf("day").toMillis();
+  const endofDay = DateTime.now()
+    .endOf("day")
+    .minus({ milliseconds: 999 })
+    .toMillis();
   await client.set(ticker, JSON.stringify(aggs));
   await client.expireAt(ticker, endofDay);
 }
