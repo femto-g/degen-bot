@@ -1,8 +1,5 @@
-import { environmentVariables } from "./core/env";
 import { Client, Events, GatewayIntentBits, MessageFlags } from "discord.js";
 import { buildClient, loadCommands } from "./core/services";
-
-const { token } = environmentVariables;
 
 // Require the necessary discord.js classe
 

@@ -39,7 +39,7 @@ interface AggregateBar {
 
 export type AssetClass = "STOCK" | "CRYPTO";
 
-const { apiKey } = environmentVariables;
+const { POLYGON_API_KEY } = environmentVariables;
 
 function normalizeTicker(ticker: string) {
   if (ticker.startsWith("X:")) {
@@ -169,7 +169,7 @@ export async function getStockAggregates(ticker: string) {
   const rangeStart = oneMonthAgo.toMillis();
   const rangeEnd = now.toMillis();
 
-  const url = `https://api.polygon.io/v2/aggs/ticker/${ticker}/range/1/day/${rangeStart}/${rangeEnd}?adjusted=true&sort=asc&apiKey=${apiKey}`;
+  const url = `https://api.polygon.io/v2/aggs/ticker/${ticker}/range/1/day/${rangeStart}/${rangeEnd}?adjusted=true&sort=asc&apiKey=${POLYGON_API_KEY}`;
   const response = await fetch(url);
   if (response.status == StatusCodes.TOO_MANY_REQUESTS) {
     throw new RateLimitExceededError();
@@ -193,7 +193,7 @@ export async function getCryptoAggregates(ticker: string) {
 
   ticker = "X:" + ticker;
 
-  const url = `https://api.polygon.io/v2/aggs/ticker/${ticker}/range/1/day/${rangeStart}/${rangeEnd}?adjusted=true&sort=asc&apiKey=${apiKey}`;
+  const url = `https://api.polygon.io/v2/aggs/ticker/${ticker}/range/1/day/${rangeStart}/${rangeEnd}?adjusted=true&sort=asc&apiKey=${POLYGON_API_KEY}`;
   const response = await fetch(url);
   if (response.status == StatusCodes.TOO_MANY_REQUESTS) {
     throw new RateLimitExceededError();

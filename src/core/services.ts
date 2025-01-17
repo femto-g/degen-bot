@@ -6,7 +6,7 @@ import { logger } from "./logger";
 import * as cron from "node-cron";
 import { refreshList } from "../biz/stocks";
 
-const { token } = environmentVariables;
+const { DISCORD_APP_TOKEN } = environmentVariables;
 
 export async function loadCommands(client: Client) {
   client.commands = new Collection();
@@ -87,7 +87,7 @@ function addHandlers(client: Client) {
 export async function buildClient(client: Client) {
   await loadCommands(client);
   addHandlers(client);
-  client.login(token);
+  client.login(DISCORD_APP_TOKEN);
 
   cron.schedule(
     "0 0 * * *",

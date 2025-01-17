@@ -1,17 +1,18 @@
 import { createClient } from "redis";
 import { environmentVariables } from "./env";
 
-const client = (async () => {
-  return await createClient({
-    //TODO: password protect and put in .env
-    url: environmentVariables.redisUrl,
-  })
-    .on("error", (err) => {
-      console.log("Redis Client Error", err);
-    })
-    .connect();
-})();
+let client: ReturnType<typeof createClient> | null = null;
 
 export async function getRedisClient() {
-  return await client;
+  if (!client) {
+    client = await createClient({
+      //TODO: password protect and put in .env
+      url: environmentVariables.REDIS_URL,
+    })
+      .on("error", (err) => {
+        console.log("Redis Client Error", err);
+      })
+      .connect();
+  }
+  return client;
 }

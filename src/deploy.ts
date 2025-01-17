@@ -3,7 +3,8 @@ import fs from "node:fs";
 import path from "node:path";
 import { environmentVariables } from "./core/env";
 
-const { clientId, guildId, token } = environmentVariables;
+const { DISCORD_CLIENT_ID, DISCORD_GUILD_ID, DISCORD_APP_TOKEN } =
+  environmentVariables;
 (async () => {
   const commands = [];
   // Grab all the command folders from the commands directory you created earlier
@@ -32,7 +33,7 @@ const { clientId, guildId, token } = environmentVariables;
   }
 
   // Construct and prepare an instance of the REST module
-  const rest = new REST().setToken(token);
+  const rest = new REST().setToken(DISCORD_APP_TOKEN);
   //console.log(commands);
 
   // and deploy your commands!
@@ -44,7 +45,7 @@ const { clientId, guildId, token } = environmentVariables;
 
     // The put method is used to fully refresh all commands in the guild with the current set
     const data: any = await rest.put(
-      Routes.applicationGuildCommands(clientId, guildId),
+      Routes.applicationGuildCommands(DISCORD_CLIENT_ID, DISCORD_GUILD_ID),
       { body: commands }
     );
 

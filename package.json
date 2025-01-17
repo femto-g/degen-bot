@@ -5,7 +5,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "tsc-watch -p tsconfig.json --onSuccess \"cross-env NODE_ENV=development node ./dist/index.js\" --noClear",
-    "deploy": "node ./dist/deploy.js",
+    "deploy": "npm run build && node ./dist/deploy.js",
     "build": "tsc -p tsconfig.json",
     "docker:dev:up": "docker compose up --watch",
     "docker:dev:down": "docker compose down",
