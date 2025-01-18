@@ -4,7 +4,7 @@ import { Collection, Client, MessageFlags, Events } from "discord.js";
 import { environmentVariables } from "./env";
 import { logger } from "./logger";
 import * as cron from "node-cron";
-import { refreshList } from "../biz/stocks";
+import { refreshList } from "../biz/aggregates";
 
 const { DISCORD_APP_TOKEN } = environmentVariables;
 

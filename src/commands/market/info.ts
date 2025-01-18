@@ -5,13 +5,8 @@ import {
   DiscordjsErrorCodes,
   SlashCommandBuilder,
 } from "discord.js";
-import {
-  getAggregates,
-  getCryptoAggregates,
-  getSnapShot,
-  getStockAggregates,
-  normalizeSnapshot,
-} from "../../biz/stocks";
+import { getAggregates, getSnapShot } from "../../biz/aggregates";
+import { normalizeSnapshot } from "../../biz/normalize";
 import { snapshotTable } from "../../core/messages/text";
 import Bottleneck from "bottleneck";
 import { RequestError } from "../../core/errors";

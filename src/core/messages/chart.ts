@@ -1,5 +1,5 @@
 import QuickChart from "quickchart-js";
-import { Aggregates } from "../../biz/stocks";
+import { Aggregates } from "../../biz/aggregates";
 import { ChartConfiguration } from "chart.js";
 import * as plugin from "chart.js/dist/plugins";
 

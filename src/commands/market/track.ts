@@ -5,11 +5,8 @@ import {
   DiscordjsErrorCodes,
   SlashCommandBuilder,
 } from "discord.js";
-import {
-  getAggregates,
-  getSnapShot,
-  normalizeSnapshot,
-} from "../../biz/stocks";
+import { getAggregates, getSnapShot } from "../../biz/aggregates";
+import { normalizeSnapshot } from "../../biz/normalize";
 import { snapshotTable } from "../../core/messages/text";
 import { InvalidTickerError, RequestError } from "../../core/errors";
 import { addTrackedAsset } from "../../data/trackedAssets";

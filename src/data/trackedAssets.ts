@@ -19,5 +19,10 @@ export async function removeTrackedAsset(
 }
 
 export async function getTrackedAssets() {
-  return await prisma.trackedAsset.findMany();
+  return await prisma.trackedAsset.findMany({
+    select: {
+      ticker: true,
+      assetClass: true,
+    },
+  });
 }

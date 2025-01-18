@@ -45,7 +45,7 @@ dotenv.config({ path: envPath });
 
 //TODO: validation
 
-const envVars = {
+let envVars = {
   DISCORD_APP_TOKEN: process.env.DISCORD_APP_TOKEN,
   DISCORD_CLIENT_ID: process.env.DISCORD_CLIENT_ID,
   DISCORD_GUILD_ID: process.env.DISCORD_GUILD_ID,
@@ -54,5 +54,15 @@ const envVars = {
   REDIS_URL: process.env.REDIS_URL,
 };
 
+if (process.env.NODE_ENV == "unit_test") {
+  envVars = {
+    DISCORD_APP_TOKEN: "",
+    DISCORD_CLIENT_ID: "",
+    DISCORD_GUILD_ID: "",
+    POLYGON_API_KEY: "",
+    DATABASE_URL: "",
+    REDIS_URL: "",
+  };
+}
 export const environmentVariables = environmentVariablesSchema.parse(envVars);
 export type EnvironmentVariables = z.infer<typeof environmentVariablesSchema>;
