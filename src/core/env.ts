@@ -64,5 +64,16 @@ if (process.env.NODE_ENV == "unit_test") {
     REDIS_URL: "",
   };
 }
+
+if (process.env.NODE_ENV == "integration_test") {
+  envVars = {
+    DISCORD_APP_TOKEN: "",
+    DISCORD_CLIENT_ID: "",
+    DISCORD_GUILD_ID: "",
+    POLYGON_API_KEY: "",
+    DATABASE_URL: process.env.DATABASE_URL,
+    REDIS_URL: process.env.REDIS_URL,
+  };
+}
 export const environmentVariables = environmentVariablesSchema.parse(envVars);
 export type EnvironmentVariables = z.infer<typeof environmentVariablesSchema>;
