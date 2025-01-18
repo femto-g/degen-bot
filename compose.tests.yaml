@@ -12,6 +12,7 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile
+    entrypoint: ["sh", "scripts/start.sh"]
     ports:
       - 3000:3000
     depends_on:

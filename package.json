@@ -9,6 +9,7 @@
     "docker:test:integration": "docker compose -f compose.tests.yaml run --rm app npm run test:integration:cmd",
     "test:integration:cmd": "npx prisma migrate dev --name init && npm run test:integration",
     "dev": "tsc-watch -p tsconfig.base.json --onSuccess \"cross-env NODE_ENV=development node ./dist/index.js\" --noClear",
+    "prod": "tsc -p tsconfig.base.json --onSuccess \"cross-env NODE_ENV=production node ./dist/index.js\"",
     "deploy": "npm run build && node ./dist/deploy.js",
     "build": "tsc -p tsconfig.base.json",
     "docker:dev:up": "docker compose up --watch",
