@@ -104,7 +104,7 @@ export async function buildClient(client: Client) {
       scheduled: true,
       //IMPORTANT! FIX THIS, CANNOT BE EST MUST BE SAME TIME ZONE AS REDIS SERVICE
       //DONE: MADE THIS UTC
-      timezone: "Africa/Abidjan",
+      timezone: "America/New_York",
     }
   );
 }

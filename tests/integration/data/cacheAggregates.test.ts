@@ -24,14 +24,15 @@ describe("./src/data/cacheAggregates.ts", () => {
       await client.flushAll();
     });
 
-    it("should set aggregates in Redis ", async () => {
-      //TODO: with correct expiration
+    it("should set aggregates in Redis with correct expiration", async () => {
+      //DONE: with correct expiration
       const ticker = "AAPL";
       const aggs = {
         ticker,
       };
 
       const endofDay = DateTime.now()
+        .setZone("America/New_York")
         .endOf("day")
         .minus({ milliseconds: 999 })
         .toMillis();
@@ -43,13 +44,17 @@ describe("./src/data/cacheAggregates.ts", () => {
       const cachedData = await client.get(ticker);
       expect(cachedData).toBe(JSON.stringify(aggs));
 
-      // // Verify the expiration time set in Redis (it's stored as a Unix timestamp)
-      // const ttl = await client.ttl(ticker);
-      // const expectedTTL = endofDay / 1000 - Math.floor(Date.now() / 1000); // in seconds
+      // Verify the expiration time set in Redis (it's stored as a Unix timestamp)
+      const ttl = await client.ttl(ticker);
+      const expectedTTL =
+        endofDay / 1000 -
+        Math.floor(
+          DateTime.now().setZone("America/New_York").toMillis() / 1000
+        ); // in seconds
 
-      // // Expect the TTL to be close to the expected value
-      // expect(ttl).toBeGreaterThanOrEqual(expectedTTL - 5); // Allow for small variations in time
-      // expect(ttl).toBeLessThanOrEqual(expectedTTL + 5);
+      // Expect the TTL to be close to the expected value
+      expect(ttl).toBeGreaterThanOrEqual(expectedTTL - 5); // Allow for small variations in time
+      expect(ttl).toBeLessThanOrEqual(expectedTTL + 5);
     });
   });
 });
