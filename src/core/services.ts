@@ -59,6 +59,7 @@ function addHandlers(client: Client) {
     try {
       await command.execute(interaction);
       logger.info({
+        message: "CommandInteraction",
         commandName: interaction.commandName,
         options: interaction.options.data.map((option) => ({
           name: option.name,
@@ -97,6 +98,9 @@ export async function buildClient(client: Client) {
         await refreshList();
         console.log("Finished refreshing");
       } catch (error) {
+        if (error instanceof Error) {
+          error.message += "/ Error when refreshing tracking list during CRON";
+        }
         logger.error(error);
       }
     },
