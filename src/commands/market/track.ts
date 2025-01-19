@@ -8,9 +8,13 @@ import {
 import { getAggregates, getSnapShot } from "../../biz/aggregates";
 import { normalizeSnapshot } from "../../biz/normalize";
 import { snapshotTable } from "../../core/messages/text";
-import { InvalidTickerError, RequestError } from "../../core/errors";
+import {
+  InvalidTickerError,
+  RateLimitExceededError,
+  RequestError,
+} from "../../core/errors";
 import { addTrackedAsset } from "../../data/trackedAssets";
-import { AssetClass } from "@prisma/client";
+import { AssetClass, Prisma } from "@prisma/client";
 
 export const data = new SlashCommandBuilder()
   .setName("track")
@@ -50,13 +54,30 @@ export async function execute(interaction: CommandInteraction) {
     await addTrackedAsset(ticker, assetClass);
   } catch (error) {
     //catch some db error maybe?
+    // console.log(error);
+    //DONE: catch errorr when an already tracked ticker + assetClass is provided
     if (error instanceof InvalidTickerError) {
       return await interaction.reply({
         content: error.message,
         ephemeral: true,
       });
+    } else if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      //console.log(`caught error ${error.code}`);
+      if (error.code === "P2002") {
+        return await interaction.reply({
+          content: "This asset is already being tracked.",
+          ephemeral: true,
+        });
+      }
     }
     //catch rate limit exceeded error and send to bottleneck?
+    //TODO: CATCH RATE LIMIT ERROR
+    else if (error instanceof RateLimitExceededError) {
+      return await interaction.reply({
+        content: error.message,
+        ephemeral: true,
+      });
+    } else throw error;
   }
 
   if (interaction.replied) {
