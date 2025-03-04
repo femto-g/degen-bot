@@ -50,6 +50,12 @@ To set up and run Degen Bot locally, follow these steps:
 
 Once the bot is running, use the slash commands in your Discord server to fetch market data. (Refer to Discord's slash command documentation for usage details.)
 
+<img src="https://github.com/user-attachments/assets/0ea22b7c-484a-4cb9-907e-6eb985b9c85d" alt="voo info" width="450" height="300"> 
+<br>
+<img src="https://github.com/user-attachments/assets/8db6848b-0b89-43cd-826c-010b84bf1ae9" alt="list" width="450" height="250">
+
+
+
 ### Commands
 
 - `/about`: Displays information about the bot
